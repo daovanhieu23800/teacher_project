@@ -1,0 +1,54 @@
+<!-- restaurant_menu/templates/restaurant_menu/all_tables.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Tables</title>
+</head>
+<body>
+    <h1>All Dishes and Ingredients</h1>
+    
+    <h2>Dishes</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Ingredients</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dish in dishes %}
+            <tr>
+                <td>{{ dish.name }}</td>
+                <td>{{ dish.description }}</td>
+                <td>
+                    <ul>
+                        {% for dish_ingredient in dish.dishingredient_set.all %}
+                        <li>{{ dish_ingredient.ingredient.name }}: {{ dish_ingredient.quantity }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Ingredients</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ingredient in ingredients %}
+            <tr>
+                <td>{{ ingredient.name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    
+</body>
+</html>

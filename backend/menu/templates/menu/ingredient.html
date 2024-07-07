@@ -1,0 +1,28 @@
+<!-- restaurant_menu/templates/restaurant_menu/all_tables.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ingredients Tables</title>
+</head>
+<body>
+    <h1>All Ingredients</h1>
+    
+    <h2>Ingredients</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ingredient in ingredients %}
+            <tr>
+                <td>{{ ingredient.name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    
+</body>
+</html>
