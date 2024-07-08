@@ -3,8 +3,9 @@ from .models import Dish, Ingredient, DishIngredient
 from django.http import JsonResponse, HttpResponse
 import json
 import csv
+import io
 # Create your views here.
-
+import ast
 
 def index(request):
     dishes = Dish.objects.all()
@@ -110,37 +111,56 @@ def dish(request):
 
 
 def report_ingredient(request):
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="ingredient_catalog.csv"'
+    if request.method == 'GET':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="ingredient_catalog.csv"'
 
-    writer = csv.writer(response)
-    writer.writerow(['Ingredient'])
+        writer = csv.writer(response)
+        writer.writerow(['Ingredient'])
 
-    ingredients = Ingredient.objects.all()
-    for ingredient in ingredients:
-        writer.writerow([ingredient.name])
+        ingredients = Ingredient.objects.all()
+        for ingredient in ingredients:
+            writer.writerow([ingredient.name])
 
-    return response
-
+        return response
+    elif request.method == 'POST':
+        file =  request.FILES.get('file')
+        rows = io.TextIOWrapper(file, encoding="utf-8-sig", newline="")
+        for row in csv.DictReader(rows):
+            Ingredient.objects.create(name=row['Ingredient'])
+        return JsonResponse({'message': 'multiple ingredient add successfully!'}, status=200)
 
 def report_dish(request):
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Dish_catalog.csv"'
+    if request.method == "GET":
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="Dish_catalog.csv"'
 
-    writer = csv.writer(response)
-    writer.writerow(['Dish name', 'Description', 'Ingredients', 'Quantity'])
+        writer = csv.writer(response)
+        writer.writerow(['Dish name', 'Description', 'Ingredients', 'Quantity'])
 
-    dishes = Dish.objects.all()
-    for dish in dishes:
-        ingredients = DishIngredient.objects.filter(dish=dish)
-        ingredient_list = []
-        quantity_list = []
+        dishes = Dish.objects.all()
+        for dish in dishes:
+            ingredients = DishIngredient.objects.filter(dish=dish)
+            ingredient_list = []
+            quantity_list = []
 
-        for ingredient in ingredients:
-            ingredient_list.append(ingredient.ingredient.name)
-            quantity_list.append(ingredient.quantity)
+            for ingredient in ingredients:
+                ingredient_list.append(ingredient.ingredient.name)
+                quantity_list.append(ingredient.quantity)
 
-        writer.writerow([dish.name, dish.description,
-                        ingredient_list,  quantity_list])
+            writer.writerow([dish.name, dish.description,
+                            ingredient_list,  quantity_list])
 
-    return response
+        return response
+    elif request.method == "POST":
+        file =  request.FILES.get('file')
+        rows = io.TextIOWrapper(file, encoding="utf-8-sig", newline="")
+        for row in csv.DictReader(rows):
+            dish = Dish.objects.create(name=row['Name'], description=row['Description'])
+            # print(row['Name'], row['Description'], row['Ingredient'], row['Quantity'])
+            ingredient_list = row['Ingredient'].split(',')
+            quantity_list = row['Quantity'].split(',')
+            for i in range(len(ingredient_list)):
+                DishIngredient.objects.create(dish=dish, ingredient=Ingredient.objects.get(name=ingredient_list[i]), quantity=quantity_list[i])
+                # print(ingredient_list[i], quantity_list[i])
+        return JsonResponse({'message': 'multiple dish add successfully!'}, status=200)
