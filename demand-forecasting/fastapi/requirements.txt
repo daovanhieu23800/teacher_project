@@ -2,4 +2,5 @@ numpy
 pandas
 joblib
 uvicorn
+lightgbm
 fastapi[all]

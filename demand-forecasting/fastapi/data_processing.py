@@ -2,12 +2,6 @@
 import numpy as np
 import pandas as pd
 
-# Model
-import lightgbm as lgb
-import shap
-from sklearn.model_selection import TimeSeriesSplit, GridSearchCV, RandomizedSearchCV
-from sklearn.metrics import make_scorer
-
 # Configuration
 import warnings
 warnings.filterwarnings('ignore')
@@ -287,7 +281,7 @@ def process(df):
     clus.drop("sales", axis = 1, inplace = True)
     df = pd.merge(df, clus, how = "left")
     del clus
-    
+
     df = df.sort_values("date").reset_index(drop = True)
     return df
 #endregion Feature Engineering

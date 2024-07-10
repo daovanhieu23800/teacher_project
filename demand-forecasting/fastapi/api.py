@@ -2,6 +2,7 @@ import io
 
 import joblib
 import pandas as pd
+import lightgbm 
 from fastapi import FastAPI, File
 from pydantic import BaseModel
 from starlette.responses import Response
