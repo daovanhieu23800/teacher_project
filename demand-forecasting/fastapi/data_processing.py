@@ -74,12 +74,12 @@ def CompareTwoGroups(dataframe, group, target):
 #region Feature Engineering
 # 1. Time Related Features
 #####################################################
-def process(df):
+def process(historical_data, input_data):
     def create_date_features(df):
         df['month'] = df.date.dt.month
         df['day_of_month'] = df.date.dt.day
         df['day_of_year'] = df.date.dt.dayofyear
-        df['week_of_year'] = df.date.dt.weekofyear
+        df['week_of_year'] = df.date.dt.isocalendar().week
         df['day_of_week'] = df.date.dt.dayofweek + 1
         df['year'] = df.date.dt.year
         df["is_wknd"] = df.date.dt.weekday // 4
@@ -95,8 +95,9 @@ def process(df):
         df["season"] = np.where(df.month.isin([6,7,8]), 2, df["season"])
         df["season"] = np.where(df.month.isin([9, 10, 11]), 3, df["season"])
         return df
+    
+    df = pd.concat([historical_data, input_data], sort=False)
     df = create_date_features(df)
-
 
     # Rolling Summary Stats Features
     #####################################################

@@ -31,6 +31,9 @@ st.write(
          Visit this URL at `:8000/docs` for FastAPI documentation."""
 )  # description and instructions
 
+st.markdown("### Historical data")
+st.dataframe(pd.read_csv('./sample-data/train.csv', index_col=False))  # sample data
+
 input_data = st.file_uploader("insert tabula data", type=['csv', 'xls', 'xlsx'])  # data upload widget
 
 if st.button("Get forecasting results"):
@@ -39,7 +42,7 @@ if st.button("Get forecasting results"):
 
     if input_data:
         output_data = process(input_data, backend)
-        col1.markdown("### Input historical data")
+        col1.markdown("### Input data")
         col1.dataframe(input_data)
 
         col2.markdown("### Next 3 months of store item sales")
