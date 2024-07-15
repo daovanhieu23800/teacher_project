@@ -6,7 +6,7 @@ COPY requirements.txt /streamlit
 
 WORKDIR /streamlit
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt --proxy http://192.168.100.210:3128
 
 COPY . /streamlit
 
