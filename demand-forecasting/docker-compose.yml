@@ -2,14 +2,19 @@ version: '3'
 
 services:
   fastapi:
+    volumes:
+      - ./models:/fastapi/models
     build: fastapi/
     ports: 
       - 8000:8000
     networks:
       - deploy_network
     container_name: fastapi
+    
 
   streamlit:
+    volumes:
+      - ./sample-data:/streamlit/sample-data
     build: streamlit/
     depends_on:
       - fastapi
@@ -18,6 +23,8 @@ services:
     networks:
       - deploy_network
     container_name: streamlit
+
+
 
 networks:
   deploy_network:
