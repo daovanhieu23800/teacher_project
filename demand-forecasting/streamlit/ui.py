@@ -1,25 +1,24 @@
 import io
+import json
 
 import requests
-from PIL import Image
 import pandas as pd
 import streamlit as st
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 
 # interact with FastAPI endpoint
-backend = "http://fastapi:8000/demand-forecasting"
-
+backend = "http://127.0.0.1:8080/"
 
 def process(data, server_url: str):
+    session = requests.Session()
+    session.trust_env = False
 
-    m = MultipartEncoder(fields={"file": ("filename", data, "csv/xls/xlsx")})
-
-    r = requests.post(
-        server_url, data=m, headers={"Content-Type": m.content_type}, timeout=8000
+    r = session.post(
+        server_url, data=data, timeout=30000
     )
 
-    return r
+    return r.json()
 
 
 # construct UI layout
@@ -32,22 +31,63 @@ st.write(
 )  # description and instructions
 
 st.markdown("### Historical data")
-st.dataframe(pd.read_csv('./sample-data/train.csv', index_col=False))  # sample data
+st.dataframe(pd.read_csv('../sample-data/train.csv', index_col=False))  # sample data
 
-input_data = st.file_uploader("insert tabula data", type=['csv', 'xls', 'xlsx'])  # data upload widget
+tab1, tab2 = st.tabs(["Input 1 Item", "Input many Items"])
 
-if st.button("Get forecasting results"):
+with tab1:
+    with st.form(key='filling_form'):
+        datetime = st.date_input("Select date for forecasting", value=None)  # date input widget
+        store_id = st.number_input("Enter store ID from the Historical Data above", value=None)  # store ID input widget
+        item_id = st.number_input("Enter item ID from the Historical Data above", value=None)  # item ID input widget
+        
+        if st.form_submit_button("Get forecasting results"):
+            try:
+                if datetime is not None and store_id is not None and item_id is not None:
+                    inserted_data = {
+                        'id':0, 
+                        'date':str(datetime), 
+                        'store':int(store_id), 
+                        'item':int(item_id)
+                    }
+                    col1, col2 = st.columns(2)
+                    col1.markdown("### Input data")
+                    col1.dataframe(pd.DataFrame([inserted_data]))
+                    
+                    # print(f'inserted_data: {inserted_data}')
+                    output_data = process(inserted_data, backend)
+                    # print(output_data)
+                    col2.markdown("### Next 3 months sales")
+                    col2.dataframe(pd.DataFrame(output_data))
+                else:
+                    st.error('No input data to forecast. Please fill in the form above.')
 
-    col1, col2 = st.columns(2)
+            except Exception as e:
+                st.error(e)        
+        
 
-    if input_data:
-        output_data = process(input_data, backend)
-        col1.markdown("### Input data")
-        col1.dataframe(input_data)
+with tab2:
+    uploaded_file = st.file_uploader("Upload tabula data if you want to predict more than 1 item", type=['csv', 'xls', 'xlsx']) 
 
-        col2.markdown("### Next 3 months of store item sales")
-        col2.dataframe(output_data)
+    if st.button("Get forecasting results"):
+        try:
+            if uploaded_file is not None:
+                col1, col2 = st.columns(2)
+                col1.markdown("### Input data")
+                uploaded_file_ext = uploaded_file.name.split('.')[-1]
+                uploaded_data = None
+                if uploaded_file_ext in ["xls", "xlsx"]:
+                    uploaded_data = pd.read_excel(io.BytesIO(uploaded_file.read()), index_col=False)
+                else:
+                    uploaded_data = pd.read_csv(io.BytesIO(uploaded_file.read()), index_col=False)
+                
+                col1.dataframe(uploaded_data)
 
-    else:
-        # handle case with no data
-        st.write("Insert data!")
+                output_data = process(uploaded_data.to_dict(orient='list'), backend)
+                col2.markdown("### Next 3 months sales")
+                col2.dataframe(pd.DataFrame(output_data))
+            else:
+                st.error('No input data to forecast. Please upload data above.')
+                
+        except Exception as e:
+            st.error(e)
