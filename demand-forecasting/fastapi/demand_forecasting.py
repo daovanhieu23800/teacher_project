@@ -3,7 +3,6 @@ import numpy as np
 
 
 def process(data: pd.DataFrame) -> pd.DataFrame:
-    print(4)
     data['date'] = pd.to_datetime(data['date'])
     data['month'] = data['date'].dt.month
     data['day'] = data['date'].dt.dayofweek
