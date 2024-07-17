@@ -23,17 +23,17 @@ The objective of this competition is to predict 3 months of item-level sales dat
 
 Here is the landing page:
 
-![Alt text](/space/hotel/quangd/projects/outsource/teacher_project/demand-forecasting/images/ui-1.png "landing page")
+![Alt text](images/ui-1.png "landing page")
 
-Web app has 2 input option: 
+Web app has 2 input option:
 
-**Input 1 item via filling the form** 
+**Input 1 item via filling the form**
 
-![Alt text](/space/hotel/quangd/projects/outsource/teacher_project/demand-forecasting/images/ui-2.png "Input 1 item")
+![Alt text](images/ui-2.png "Input 1 item")
 
 **Input multi items via uploading file**
 
-![Alt text](/space/hotel/quangd/projects/outsource/teacher_project/demand-forecasting/images/ui-3.png "Input multi items")
+![Alt text](images/ui-3.png "Input multi items")
 
 ## Run demo app
 
