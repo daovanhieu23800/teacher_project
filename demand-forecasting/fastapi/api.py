@@ -9,7 +9,7 @@ from starlette.responses import Response
 from demand_forecasting import DemandForecasting
 
 
-model = joblib.load("../models/item_demand_forcast_lgb.pkl") 
+model = joblib.load("models/item_demand_forcast_lgb.pkl") 
 app = FastAPI()
 
 
@@ -27,7 +27,7 @@ async def api(request: Request):
     }
     # print(uploaded_file)
     try:
-        print(dict_data)
+        # print(dict_data)
         # Handle file upload
         if uploaded_file:
             input_model_data = None

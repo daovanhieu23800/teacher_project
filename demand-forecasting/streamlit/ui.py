@@ -8,7 +8,11 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 
 # interact with FastAPI endpoint
-backend = "http://127.0.0.1:8080/"
+# for running FastAPI and Streamlit apps separately, use the following:
+# backend = "http://0.0.0.0:8080/"
+# for running docker, use the following:
+backend = "http://fastapi:8080/"
+
 
 def process(data, server_url: str):
     session = requests.Session()
@@ -31,7 +35,7 @@ st.write(
 )  # description and instructions
 
 st.markdown("### Historical data")
-st.dataframe(pd.read_csv('../sample-data/train.csv', index_col=False))  # sample data
+st.dataframe(pd.read_csv('data/train.csv', index_col=False))  # sample data
 
 tab1, tab2 = st.tabs(["Input 1 Item", "Input many Items"])
 
