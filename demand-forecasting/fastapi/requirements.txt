@@ -4,3 +4,4 @@ joblib
 uvicorn
 lightgbm
 fastapi[all]
+python-dateutil

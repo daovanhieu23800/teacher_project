@@ -1,5 +1,6 @@
 import io
 import json
+import base64
 
 import requests
 import pandas as pd
@@ -22,6 +23,7 @@ def process(data, server_url: str):
         server_url, data=data, timeout=30000
     )
 
+    # print(r)
     return r.json()
 
 
@@ -59,9 +61,9 @@ with tab1:
                     col1.dataframe(pd.DataFrame([inserted_data]))
                     
                     # print(f'inserted_data: {inserted_data}')
-                    output_data = process(inserted_data, backend)
+                    output_data = json.loads(process(inserted_data, backend))
                     # print(output_data)
-                    col2.markdown("### Next 3 months sales")
+                    col2.markdown("### Predicted sales in next")
                     col2.dataframe(pd.DataFrame(output_data))
                 else:
                     st.error('No input data to forecast. Please fill in the form above.')
@@ -86,10 +88,28 @@ with tab2:
                     uploaded_data = pd.read_csv(io.BytesIO(uploaded_file.read()), index_col=False)
                 
                 col1.dataframe(uploaded_data)
+                # print(type(uploaded_data.to_dict()))
 
-                output_data = process(uploaded_data.to_dict(orient='list'), backend)
-                col2.markdown("### Next 3 months sales")
-                col2.dataframe(pd.DataFrame(output_data))
+                # Convert file content to base64
+                encoded_file = base64.b64encode(uploaded_file.getvalue()).decode('utf-8')
+                
+                # Create JSON payload
+                data = {
+                    "file_ext": uploaded_file_ext,
+                    "file": encoded_file
+                }
+                output_data = process(data, backend)
+                col2.markdown("### Predicted sales in next")
+
+                output_df = pd.DataFrame(output_data)
+                col2.dataframe(output_df)
+
+                st.download_button(
+                    label="Download data as CSV",
+                    data=output_df.to_csv(index=False).encode('utf-8'),
+                    file_name='data.csv',
+                    mime='text/csv',
+                )
             else:
                 st.error('No input data to forecast. Please upload data above.')
                 

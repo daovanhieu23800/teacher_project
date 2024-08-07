@@ -24,7 +24,8 @@ def DemandForecasting(model, input_data: pd.DataFrame):
     # print(predictions)
 
     output_df = pd.DataFrame({
+        "date": pd.to_datetime(input_data['date']),
         "sales": np.round(predictions).astype(int)
     })
     # print(output_df)
-    return output_df.to_json(orient='records', indent=4)
+    return output_df
